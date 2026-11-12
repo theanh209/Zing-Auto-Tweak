@@ -1,5 +1,5 @@
-ARCHS = arm64
-TARGET = iphone:clang:latest:latest
+ARCHS = arm64 arm64e
+TARGET = iphone:clang:latest:14.0
 
 DEBUG = 0
 FINALPACKAGE = 1
@@ -44,7 +44,6 @@ $(TWEAK_NAME)_CCFLAGS = \
     -Wno-writable-strings \
     -DKOMARU
 
-
 $(TWEAK_NAME)_FILES = \
     MenuLoad/ImGuiDrawView.xm \
     $(wildcard MenuLoad/*.mm) \
@@ -61,8 +60,7 @@ $(TWEAK_NAME)_FILES = \
     utils/libtitanox/MemX/VMTWrapper.mm \
     utils/libtitanox/static-inline-hook/sih.mm \
     utils/libtitanox/utils/utils.mm \
-    utils/libtitanox/vm_funcs/vm.mm \
-    Source/Engines/Unity/il2cpp.mm
+    utils/libtitanox/vm_funcs/vm.mm
 
 $(TWEAK_NAME)_CFLAGS += \
     -I$(THEOS_PROJECT_DIR)/utils/libtitanox \
