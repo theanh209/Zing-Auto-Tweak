@@ -16,7 +16,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang make git curl ldid dpkg fakeroot
+          sudo apt-get install -y clang make git curl dpkg fakeroot
+
+      - name: Download ldid
+        run: |
+          curl -LO https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_linux_x86_64
+          chmod +x ldid_linux_x86_64
+          sudo mv ldid_linux_x86_64 /usr/local/bin/ldid
 
       - name: Setup Theos
         run: |
