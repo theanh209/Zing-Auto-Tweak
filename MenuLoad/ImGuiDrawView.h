@@ -1,14 +1,8 @@
 #import <UIKit/UIKit.h>
+#import <MetalKit/MetalKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface ImGuiDrawView : UIViewController
-
+@interface ImGuiDrawView : UIViewController <MTKViewDelegate>
 + (void)showChange:(BOOL)open;
 + (BOOL)isMenuShowing;
-
-- (void)updateIOWithTouchEvent:(UIEvent *)event;
-
+- (void)updateIOWithTouchEvent:(UIEvent *)event; 
 @end
-
-NS_ASSUME_NONNULL_END
