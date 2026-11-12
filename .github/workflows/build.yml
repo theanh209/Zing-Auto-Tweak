@@ -7,11 +7,16 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang make git curl ldid dpkg fakeroot
 
       - name: Setup Theos
         run: |
@@ -23,10 +28,6 @@ jobs:
           git clone --depth 1 https://github.com/theos/sdks.git $HOME/sdks
           mv $HOME/sdks/iPhoneOS16.5.sdk $HOME/theos/sdks/
           
-      - name: Install ldid
-        run: |
-          brew install ldid
-
       - name: Build Package
         run: |
           make clean
@@ -35,5 +36,5 @@ jobs:
       - name: Upload Deb
         uses: actions/upload-artifact@v3
         with:
-          name: ktemp-package
+          name: LocLoZingSpeed-Package
           path: packages/*.deb
