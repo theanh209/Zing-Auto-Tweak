@@ -1,8 +1,9 @@
-Package: com.ktemp
-Name: komaru
-Depends: mobilesubstrate
-Version: 1
+Package: com.freddy.loclozingspeed
+Name: Loc Lo Zing Speed
+Version: 1.0.0
 Architecture: iphoneos-arm
-Description: template
-Maintainer: aq9
-Author: aq9
+Description: Mod menu for Zing Speed Mobile
+Maintainer: Freddy
+Author: Freddy
+Section: Tweaks
+Depends: mobilesubstrate
