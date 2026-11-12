@@ -1,6 +1,7 @@
+#import <UIKit/UIKit.h>
+#import <MetalKit/MetalKit.h>
 #import "Includes.h"
 #import "GUI/UserMenu.h"
-#import "../Resources/Fonts/Font.h"
 #import "../Source/BasicHacks.h"
 
 @interface ImGuiDrawView () <MTKViewDelegate>
@@ -27,7 +28,7 @@ static bool MenDeal = true;
         return self;
     }
 
-    // Gọi hàm khởi tạo hack đúng tên class
+    // Khởi tạo hack
     [BasicHacks Initialize]; 
 
     IMGUI_CHECKVERSION();
@@ -38,6 +39,8 @@ static bool MenDeal = true;
 
     io.Fonts->Clear();
 
+    // TẠM COMMENT PHẦN FONT ĐỂ TEST BUILD
+    /*
     ImFontConfig config;
     config.FontDataOwnedByAtlas = false;
 
@@ -47,6 +50,7 @@ static bool MenDeal = true;
         &config,
         io.Fonts->GetGlyphRangesChineseFull()
     );
+    */
 
     ImGui_ImplMetal_Init(_device);
 
@@ -100,7 +104,7 @@ static bool MenDeal = true;
 
 - (void)updateIOWithTouchEvent:(UIEvent *)event
 {
-    if (!ImGui::GetCurrentContext()) return; // Check an toàn
+    if (!ImGui::GetCurrentContext()) return; 
 
     UITouch *anyTouch = event.allTouches.anyObject;
     if (!anyTouch) return;
@@ -129,7 +133,7 @@ static bool MenDeal = true;
 
 - (void)drawInMTKView:(MTKView *)view
 {
-    if (!ImGui::GetCurrentContext()) return; // Check an toàn
+    if (!ImGui::GetCurrentContext()) return; 
 
     if (hideRecordTextfield) {
         hideRecordTextfield.secureTextEntry = KTempVars.StreamerMode;
@@ -155,11 +159,7 @@ static bool MenDeal = true;
         ImGui_ImplMetal_NewFrame(renderPassDescriptor);
         ImGui::NewFrame();
 
-        ImFont *font = ImGui::GetFont();
-        if (font && font->FontSize > 0) font->Scale = 12.f / font->FontSize;
-
         if (MenDeal) {
-            // Bỏ Menu.Initialize() vì trong UserMenu.mm không có hàm này, gây lỗi build
             UserMenu::GetInstance().RenderingMenu();
         }
 
