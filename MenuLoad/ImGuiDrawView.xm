@@ -22,18 +22,19 @@ static bool MenDeal = true;
     _device = MTLCreateSystemDefaultDevice();
     _commandQueue = [_device newCommandQueue];
 
-    if (!self.device)
-        abort();
+    if (!self.device) {
+        NSLog(@"[R] Metal Device failed!");
+        return self;
+    }
 
-    R_BasicCheats.Initialize();
+    // Gọi hàm khởi tạo hack đúng tên class
+    [BasicHacks Initialize]; 
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
-
-    //ImGui::StyleColorsClassic();
 
     io.Fonts->Clear();
 
@@ -69,11 +70,8 @@ static bool MenDeal = true;
 
 - (void)loadView
 {
-    CGFloat w = [UIApplication sharedApplication].windows[0].rootViewController.view.frame.size.width;
-    CGFloat h = [UIApplication sharedApplication].windows[0].rootViewController.view.frame.size.height;
-
-    self.view = [[MTKView alloc]
-        initWithFrame:CGRectMake(0, 0, w, h)];
+    CGRect screenBounds = [UIScreen mainScreen].bounds;
+    self.view = [[MTKView alloc] initWithFrame:screenBounds];
 }
 
 - (void)viewDidLoad
@@ -83,14 +81,11 @@ static bool MenDeal = true;
     self.mtkView.device = self.device;
     self.mtkView.delegate = self;
     self.mtkView.clearColor = MTLClearColorMake(0, 0, 0, 0);
-    self.mtkView.backgroundColor =
-        [UIColor colorWithRed:0 green:0 blue:0 alpha:0];
+    self.mtkView.backgroundColor = [UIColor clearColor];
     self.mtkView.clipsToBounds = YES;
 
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
-
-    if (!window)
-        window = [UIApplication sharedApplication].windows[0];
+    if (!window) window = [UIApplication sharedApplication].windows.firstObject;
 
     if (window && menuTouchView)
     {
@@ -99,145 +94,87 @@ static bool MenDeal = true;
             [menuTouchView removeFromSuperview];
             [window addSubview:menuTouchView];
         }
-
         [window bringSubviewToFront:menuTouchView];
     }
 }
 
 - (void)updateIOWithTouchEvent:(UIEvent *)event
 {
+    if (!ImGui::GetCurrentContext()) return; // Check an toàn
+
     UITouch *anyTouch = event.allTouches.anyObject;
+    if (!anyTouch) return;
 
-    if (!anyTouch)
-        return;
-
-    CGPoint touchLocation =
-        [anyTouch locationInView:self.view];
-
+    CGPoint touchLocation = [anyTouch locationInView:self.view];
     ImGuiIO &io = ImGui::GetIO();
 
-    io.MousePos =
-        ImVec2(touchLocation.x, touchLocation.y);
+    io.MousePos = ImVec2(touchLocation.x, touchLocation.y);
 
     BOOL hasActiveTouch = NO;
-
     for (UITouch *touch in event.allTouches)
     {
-        if (touch.phase != UITouchPhaseEnded &&
-            touch.phase != UITouchPhaseCancelled)
+        if (touch.phase != UITouchPhaseEnded && touch.phase != UITouchPhaseCancelled)
         {
             hasActiveTouch = YES;
             break;
         }
     }
-
     io.MouseDown[0] = hasActiveTouch;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches
-          withEvent:(UIEvent *)event
-{
-    [self updateIOWithTouchEvent:event];
-}
-
-- (void)touchesMoved:(NSSet<UITouch *> *)touches
-          withEvent:(UIEvent *)event
-{
-    [self updateIOWithTouchEvent:event];
-}
-
-- (void)touchesCancelled:(NSSet<UITouch *> *)touches
-              withEvent:(UIEvent *)event
-{
-    [self updateIOWithTouchEvent:event];
-}
-
-- (void)touchesEnded:(NSSet<UITouch *> *)touches
-          withEvent:(UIEvent *)event
-{
-    [self updateIOWithTouchEvent:event];
-}
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event { [self updateIOWithTouchEvent:event]; }
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event { [self updateIOWithTouchEvent:event]; }
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event { [self updateIOWithTouchEvent:event]; }
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event { [self updateIOWithTouchEvent:event]; }
 
 - (void)drawInMTKView:(MTKView *)view
 {
-    hideRecordTextfield.secureTextEntry =
-        KTempVars.StreamerMode;
+    if (!ImGui::GetCurrentContext()) return; // Check an toàn
+
+    if (hideRecordTextfield) {
+        hideRecordTextfield.secureTextEntry = KTempVars.StreamerMode;
+    }
 
     ImGuiIO& io = ImGui::GetIO();
 
     io.DisplaySize.x = view.bounds.size.width;
     io.DisplaySize.y = view.bounds.size.height;
 
-    CGFloat framebufferScale =
-        view.window.screen.nativeScale
-        ? view.window.screen.nativeScale
-        : UIScreen.mainScreen.nativeScale;
+    CGFloat framebufferScale = view.window.screen.nativeScale ? view.window.screen.nativeScale : UIScreen.mainScreen.nativeScale;
+    io.DisplayFramebufferScale = ImVec2(framebufferScale, framebufferScale);
+    io.DeltaTime = 1 / float(view.preferredFramesPerSecond ? view.preferredFramesPerSecond : 60);
 
-    io.DisplayFramebufferScale =
-        ImVec2(framebufferScale, framebufferScale);
-
-    io.DeltaTime =
-        1 / float(view.preferredFramesPerSecond
-            ? view.preferredFramesPerSecond
-            : 60);
-
-    id<MTLCommandBuffer> commandBuffer =
-        [self.commandQueue commandBuffer];
-
-    MTLRenderPassDescriptor *renderPassDescriptor =
-        view.currentRenderPassDescriptor;
+    id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
+    MTLRenderPassDescriptor *renderPassDescriptor = view.currentRenderPassDescriptor;
 
     if (renderPassDescriptor != nil)
     {
-        id<MTLRenderCommandEncoder> renderEncoder =
-            [commandBuffer
-                renderCommandEncoderWithDescriptor:
-                    renderPassDescriptor];
-
-        [renderEncoder
-            pushDebugGroup:@"Dear ImGui Rendering"];
+        id<MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+        [renderEncoder pushDebugGroup:@"Dear ImGui Rendering"];
 
         ImGui_ImplMetal_NewFrame(renderPassDescriptor);
         ImGui::NewFrame();
 
         ImFont *font = ImGui::GetFont();
+        if (font && font->FontSize > 0) font->Scale = 12.f / font->FontSize;
 
-        if (font && font->FontSize > 0)
-            font->Scale = 12.f / font->FontSize;
-
-        if (MenDeal)
-            Menu.Initialize();
-
-        UserMenu::GetInstance().RenderingMenu();
+        if (MenDeal) {
+            // Bỏ Menu.Initialize() vì trong UserMenu.mm không có hàm này, gây lỗi build
+            UserMenu::GetInstance().RenderingMenu();
+        }
 
         ImGui::Render();
-
-        ImDrawData *draw_data =
-            ImGui::GetDrawData();
-
-        ImGui_ImplMetal_RenderDrawData(
-            draw_data,
-            commandBuffer,
-            renderEncoder
-        );
-
+        ImDrawData *draw_data = ImGui::GetDrawData();
+        ImGui_ImplMetal_RenderDrawData(draw_data, commandBuffer, renderEncoder);
         [renderEncoder popDebugGroup];
         [renderEncoder endEncoding];
-
-        [commandBuffer presentDrawable:
-            view.currentDrawable];
+        [commandBuffer presentDrawable:view.currentDrawable];
     }
-
     [commandBuffer commit];
 }
 
-- (void)mtkView:(MTKView *)view
-drawableSizeWillChange:(CGSize)size
-{
-}
+- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {}
 
 @end
 
-%ctor
-{
-}
+%ctor {}
