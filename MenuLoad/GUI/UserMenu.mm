@@ -1,97 +1,93 @@
 #include "UserMenu.h"
-#include "../Includes.h"
-#include "../TextInput.h"
+#include "../../ImGui/imgui.h"
+#import "../../Source/BasicHacks.h" // Import để lấy biến trạng thái
 
-#include <thread>
-#include <string>
-#include <atomic>
+UserMenu& UserMenu::GetInstance() {
+    static UserMenu instance;
+    return instance;
+}
 
+void UserMenu::RenderingMenu() {
+    // Cố định vị trí và kích thước menu cho đẹp
+    ImGui::SetNextWindowSize(ImVec2(380, 480), ImGuiCond_FirstUseEver);
+    
+    if (ImGui::Begin("Zing Speed Mobile - Loc Lo", nullptr, ImGuiWindowFlags_NoCollapse)) {
+        
+        if (ImGui::BeginTabBar("MenuTabs")) {
+            
+            // ---------------- TAB FUNCTION ----------------
+            if (ImGui::BeginTabItem("Function")) {
+                ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "admin se bo sung map thieu khi ban bao cao");
+                ImGui::Spacing();
 
-void UserMenu::DrawMenu()
-{
-    ImVec2 WindowSize = ImVec2(275, 200);
+                ImGui::Text("Dua kin de bao ve acc cua ban");
+                ImGui::Separator();
 
-    ImGui::SetNextWindowSize(WindowSize, ImGuiCond_Once);
+                ImGui::Columns(2, "hacks", false);
+                
+                // Cột trái - Các nút bấm sẽ đổi màu khi check
+                ImGui::Checkbox("Teleport Auto", &isTeleportAuto);
+                ImGui::Checkbox("Mini Boot", &isMiniBoost);
+                ImGui::Checkbox("Vo Han Nitro", &isVoHanNitro);
+                ImGui::Checkbox("ECU 3 Luot", &isEcu3Luot);
+                ImGui::Checkbox("Gia Toc", &isGiaToc);
+                ImGui::Checkbox("Auto Dua Lap Trinh", &isAutoDuaLapTrinh);
 
-    ImVec2 WindowPosition = ImVec2(
-        (SCREEN_WIDTH - WindowSize.x) / 2,
-        (SCREEN_HEIGHT - WindowSize.y) / 2
-    );
+                ImGui::NextColumn();
 
-    ImGui::SetNextWindowPos(WindowPosition, ImGuiCond_Once);
+                // Cột phải
+                ImGui::Checkbox("Teleport Button", &isTeleportButton);
+                ImGui::Checkbox("Thoat Nhanh", &isThoatNhanh);
+                ImGui::Checkbox("Nitro Nhanh", &isNitroNhanh);
+                ImGui::Checkbox("Tu Dua Xe", &isTuDuaXe);
 
-    ImGuiWindowFlags WindowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
-    if (!KTempVars.MoveMenu) WindowFlags |= ImGuiWindowFlags_NoMove;
+                ImGui::EndColumns();
 
-    if (ImGui::Begin("KomaruTemp", nullptr, WindowFlags))
-    {
-        ImGuiWindow* CurrentWindow = ImGui::GetCurrentWindow();
+                ImGui::Separator();
+                ImGui::Spacing();
 
-        KTempVars.MenuSize   = CurrentWindow->Size;
-        KTempVars.MenuOrigin = CurrentWindow->Pos;
+                // Hiển thị trạng thái động (Real-time status)
+                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Trang thai: Dang tu dong dua theo lap trinh!");
+                ImGui::Text("Map ID: 157 (Ho Long Tinh)");
+                
+                // Hiển thị ông nào đang bật
+                ImGui::TextColored(ImVec4(0.5f, 0.5f, 1.0f, 1.0f), "Dang bat:");
+                if(isVoHanNitro) ImGui::SameLine(), ImGui::Text("Nitro");
+                if(isMiniBoost) ImGui::SameLine(), ImGui::Text("MiniBoost");
+                if(isTeleportAuto) ImGui::SameLine(), ImGui::Text("TPAuto");
 
-        ImGui::Text("%s", MYSTIFY("Hello, Komaru!").c_str()); //xor strings with mystic.hh
+                ImGui::Spacing();
+                ImGui::Separator();
 
-        ImGui::Checkbox("testmenu", &KTempVars.testMenu);
+                ImGui::Columns(2, "hacks2", false);
+                ImGui::Checkbox("Ky Sinh", &isKySinh);
+                ImGui::Checkbox("Mod Skin", &isModSkin);
+                ImGui::Checkbox("Mod chi so xe", &isModChiSoXe);
+                
+                ImGui::NextColumn();
+                
+                ImGui::Checkbox("Fake Ten", &isFakeTen);
+                ImGui::Checkbox("Unlock Xe+Skin", &isUnlockXeSkin);
 
-        if(ImGui::Button("PrintToFileButton"))
-        {
-            KLOG::MsgToFile("Komaru.txt", "Clicked!");
+                ImGui::EndColumns();
+
+                ImGui::EndTabItem();
+            }
+            
+            // ---------------- TAB MORE ----------------
+            if (ImGui::BeginTabItem("More")) {
+                ImGui::Text("Cac tinh nang khac se duoc cap nhat sau...");
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
         }
 
-        ImGui::Text("Base: 0x%llX", (unsigned long long)KTempVars.Base);
-
-
-
-
-        ImGui::Checkbox("Move Menu", &KTempVars.MoveMenu);
-        ImGui::SameLine();
-        ImGui::Checkbox("Streamer Mode", &KTempVars.StreamerMode);
+        // Nút Build Info ở dưới cùng để test bấm
+        ImGui::Separator();
+        if (ImGui::Button("Test Bam Nut (In ra console)")) {
+            NSLog(@"[R] Freddy vua bam nut Test!");
+            // Có thể gọi hàm gì đó ở đây
+        }
     }
-
     ImGui::End();
-}
-
-
-void UserMenu::testmenu() {
-    if(KTempVars.testMenu) {
-        ImGui::Begin("TestMenu", NULL, ImGuiWindowFlags_None);
-            ImGui::Text("%s", MYSTIFY("Komaru!").c_str()); //another mystify example
-
-            static std::string TestInput;
-
-            ImGuiInput::Text(
-                "TestInput",
-                TestInput
-            );
-
-
-        ImGui::End();
-    }
-}
-
-
-void UserMenu::RenderingMenu()
-{
-    ImGui::Begin(
-        "RenderMenu",
-        nullptr,
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoBackground |
-        ImGuiWindowFlags_NoInputs
-    );
-
-    ImDrawList* drawList = ImGui::GetBackgroundDrawList();
-    //draw here
-    
-    ImGui::End();
-}
-
-void UserMenu::Initialize() //init menus
-{
-    DrawMenu();
-    testmenu(); 
-    RenderingMenu();
 }
