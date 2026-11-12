@@ -4,7 +4,6 @@
 + (void)Initialize;
 @end
 
-// Khai báo toàn bộ biến trạng thái (extern) để UserMenu gọi tới
 extern bool isTeleportAuto;
 extern bool isTeleportButton;
 extern bool isMiniBoost;
