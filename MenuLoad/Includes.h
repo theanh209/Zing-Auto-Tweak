@@ -1,8 +1,6 @@
 #pragma once
 
-#include "ImGuiDrawView.h"
-#include "MenuLoad.h"
-
+// Các file include cần thiết
 #include "../ImGui/imgui.h"
 #include "../ImGui/imgui_internal.h"
 #include "../ImGui/imgui_impl_metal.h"
@@ -16,7 +14,7 @@
 #include "../utils/Komaru/KLog.hpp"
 #endif
 
-// Chỉ dùng Math/Common, bỏ qua Unity/Unreal để test UI
+// Dùng Math Common để test
 #include "../utils/Math/Common/Math.h"
 
 #include <vector>
