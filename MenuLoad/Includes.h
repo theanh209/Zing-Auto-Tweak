@@ -11,31 +11,18 @@
 #define NEON_AVAILABLE
 #include "../utils/Wizardry/mystic.hh"
 
-#if defined(KOMARU) //-DKOMARU
+#if defined(KOMARU) 
 #include "../utils/Komaru/KMem.h"
 #include "../utils/Komaru/KLog.hpp"
 #endif
 
-//engine-specifics
-#if defined(UNREAL) && defined(UNITY)
-    #error "[KOMARU]: cannot define both engines."
-#elif defined(UNREAL)
-    #include "../utils/Math/Unreal/Math.h"
-    #include "../Source/Engines/UE4/Validity.h"
-#elif defined(UNITY)
-    #include "../utils/Math/Unity/Math.h"
-    #include "../Source/Engines/Unity/il2cpp.h"
-#else
-    #pragma message("[KOMARU]: Not targeting unreal engine or unity, defaulting to common; specify -DUNITY or -DUNREAL Makefile _CCFLAGS.")
-    #include "../utils/Math/Common/Math.h"
-#endif //in Makefile _CCFLAGS specify -DUNITY or -DUNREAL
-
+// Chỉ dùng Math/Common, bỏ qua Unity/Unreal để test UI
+#include "../utils/Math/Common/Math.h"
 
 #include <vector>
 #include <map>
 #include <unistd.h>
 #include <string.h>
-#include <vector>
 #include <functional>
 #include <iostream>
 #include <queue>
@@ -75,13 +62,10 @@ struct GlobalVariables
     }
 
     ImFont* Font;
-
     ImVec2 MenuSize   = ImVec2(0, 0);
     ImVec2 MenuOrigin = ImVec2(0, 0);
-
     bool StreamerMode = false;
     bool MoveMenu = false;
-
     bool testMenu = false;
     uintptr_t Base = 0;
 };
