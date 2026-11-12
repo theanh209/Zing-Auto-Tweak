@@ -7,7 +7,7 @@ FOR_RELEASE = 1
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = ktemp
+TWEAK_NAME = LocLoZingSpeed
 
 $(TWEAK_NAME)_FRAMEWORKS = \
     UIKit \
