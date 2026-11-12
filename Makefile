@@ -62,7 +62,11 @@ $(TWEAK_NAME)_FILES = \
     utils/libtitanox/utils/utils.mm \
     utils/libtitanox/vm_funcs/vm.mm
 
+# ĐÂY LÀ PHẦN QUAN TRỌNG ĐÃ ĐƯỢC THÊM ĐỂ FIX LỖI
 $(TWEAK_NAME)_CFLAGS += \
+    -I$(THEOS_PROJECT_DIR) \
+    -I$(THEOS_PROJECT_DIR)/MenuLoad \
+    -I$(THEOS_PROJECT_DIR)/Source \
     -I$(THEOS_PROJECT_DIR)/utils/libtitanox \
     -I$(THEOS_PROJECT_DIR)/utils/libtitanox/libtitanox \
     -I$(THEOS_PROJECT_DIR)/utils/libtitanox/brk_hook/Hook \
