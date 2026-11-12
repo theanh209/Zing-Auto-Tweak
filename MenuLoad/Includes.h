@@ -1,6 +1,7 @@
 #pragma once
 
-// Các file include cần thiết
+#include "ImGuiDrawView.h"
+
 #include "../ImGui/imgui.h"
 #include "../ImGui/imgui_internal.h"
 #include "../ImGui/imgui_impl_metal.h"
@@ -14,7 +15,6 @@
 #include "../utils/Komaru/KLog.hpp"
 #endif
 
-// Dùng Math Common để test
 #include "../utils/Math/Common/Math.h"
 
 #include <vector>
@@ -32,7 +32,6 @@
 #import <MetalKit/MetalKit.h>
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
-
 #import <os/log.h>
 #import <dlfcn.h>
 #import <mach-o/dyld.h>
