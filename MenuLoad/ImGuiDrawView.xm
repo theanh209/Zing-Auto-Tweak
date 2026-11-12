@@ -5,18 +5,15 @@
 #import "../Source/BasicHacks.h"
 
 @interface ImGuiDrawView () <MTKViewDelegate>
-
 @property (nonatomic, strong) id <MTLDevice> device;
 @property (nonatomic, strong) id <MTLCommandQueue> commandQueue;
-
 @end
 
 @implementation ImGuiDrawView
 
 static bool MenDeal = true;
 
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil
-                          bundle:(nullable NSBundle *)nibBundleOrNil
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 
@@ -28,49 +25,28 @@ static bool MenDeal = true;
         return self;
     }
 
-    // Khởi tạo hack
     [BasicHacks Initialize]; 
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
-
     io.Fonts->Clear();
 
-    // TẠM COMMENT PHẦN FONT ĐỂ TEST BUILD
+    // Bỏ qua Font để test build
     /*
     ImFontConfig config;
     config.FontDataOwnedByAtlas = false;
-
-    Font = io.Fonts->AddFontFromMemoryCompressedBase85TTF(
-        CurvyBase85,
-        40.f,
-        &config,
-        io.Fonts->GetGlyphRangesChineseFull()
-    );
+    Font = io.Fonts->AddFontFromMemoryCompressedBase85TTF(CurvyBase85, 40.f, &config, io.Fonts->GetGlyphRangesChineseFull());
     */
 
     ImGui_ImplMetal_Init(_device);
-
     return self;
 }
 
-+ (void)showChange:(BOOL)open
-{
-    MenDeal = open;
-}
-
-+ (BOOL)isMenuShowing
-{
-    return MenDeal;
-}
-
-- (MTKView *)mtkView
-{
-    return (MTKView *)self.view;
-}
++ (void)showChange:(BOOL)open { MenDeal = open; }
++ (BOOL)isMenuShowing { return MenDeal; }
+- (MTKView *)mtkView { return (MTKView *)self.view; }
 
 - (void)loadView
 {
@@ -81,7 +57,6 @@ static bool MenDeal = true;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     self.mtkView.device = self.device;
     self.mtkView.delegate = self;
     self.mtkView.clearColor = MTLClearColorMake(0, 0, 0, 0);
@@ -91,10 +66,8 @@ static bool MenDeal = true;
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     if (!window) window = [UIApplication sharedApplication].windows.firstObject;
 
-    if (window && menuTouchView)
-    {
-        if (menuTouchView.superview != window)
-        {
+    if (window && menuTouchView) {
+        if (menuTouchView.superview != window) {
             [menuTouchView removeFromSuperview];
             [window addSubview:menuTouchView];
         }
@@ -105,20 +78,16 @@ static bool MenDeal = true;
 - (void)updateIOWithTouchEvent:(UIEvent *)event
 {
     if (!ImGui::GetCurrentContext()) return; 
-
     UITouch *anyTouch = event.allTouches.anyObject;
     if (!anyTouch) return;
 
     CGPoint touchLocation = [anyTouch locationInView:self.view];
     ImGuiIO &io = ImGui::GetIO();
-
     io.MousePos = ImVec2(touchLocation.x, touchLocation.y);
 
     BOOL hasActiveTouch = NO;
-    for (UITouch *touch in event.allTouches)
-    {
-        if (touch.phase != UITouchPhaseEnded && touch.phase != UITouchPhaseCancelled)
-        {
+    for (UITouch *touch in event.allTouches) {
+        if (touch.phase != UITouchPhaseEnded && touch.phase != UITouchPhaseCancelled) {
             hasActiveTouch = YES;
             break;
         }
@@ -140,10 +109,8 @@ static bool MenDeal = true;
     }
 
     ImGuiIO& io = ImGui::GetIO();
-
     io.DisplaySize.x = view.bounds.size.width;
     io.DisplaySize.y = view.bounds.size.height;
-
     CGFloat framebufferScale = view.window.screen.nativeScale ? view.window.screen.nativeScale : UIScreen.mainScreen.nativeScale;
     io.DisplayFramebufferScale = ImVec2(framebufferScale, framebufferScale);
     io.DeltaTime = 1 / float(view.preferredFramesPerSecond ? view.preferredFramesPerSecond : 60);
@@ -174,7 +141,6 @@ static bool MenDeal = true;
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {}
-
 @end
 
 %ctor {}
