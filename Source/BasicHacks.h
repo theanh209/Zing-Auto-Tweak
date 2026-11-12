@@ -1,22 +1,22 @@
-#pragma once
+#import <Foundation/Foundation.h>
 
-class BasicHacks
-{
-    
-public:
-    BasicHacks(const BasicHacks&) = delete;
+@interface BasicHacks : NSObject
++ (void)Initialize;
+@end
 
-    static BasicHacks& GetInstance()
-    {
-        static BasicHacks instance;
-        return instance;
-    }
-
-    static void HacksThread();
-    void Initialize();
-
-private:
-    BasicHacks() = default;
-};
-
-static BasicHacks& R_BasicCheats = BasicHacks::GetInstance(); //we init in ImGuiDrawVIew.xm
+// Khai báo toàn bộ biến trạng thái (extern) để UserMenu gọi tới
+extern bool isTeleportAuto;
+extern bool isTeleportButton;
+extern bool isMiniBoost;
+extern bool isThoatNhanh;
+extern bool isVoHanNitro;
+extern bool isNitroNhanh;
+extern bool isEcu3Luot;
+extern bool isGiaToc;
+extern bool isTuDuaXe;
+extern bool isAutoDuaLapTrinh;
+extern bool isKySinh;
+extern bool isFakeTen;
+extern bool isModSkin;
+extern bool isUnlockXeSkin;
+extern bool isModChiSoXe;
